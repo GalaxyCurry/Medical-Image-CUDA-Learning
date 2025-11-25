@@ -119,9 +119,9 @@ make -j4  # Linux
 ```
 Medical-Image-CUDA-Learning/
 ├── 00-Learning-Plan/                # 学习计划与进度管理
-│   ├── 14-Month-Plan.md             # 完整14个月学习计划（复刻文档核心内容）
+│   ├── 14-Month-Plan.docs           # 完整14个月学习计划（复刻文档核心内容）
 │   ├── Weekly-Tasks/                # 每周任务分解（可按周次建子文件夹，存放每日学习笔记）
-│   ├── Progress-Tracking.md         # 学习进度跟踪（已完成模块、待补短板）
+│   ├── Progress-Tracking.docs       # 学习进度跟踪（已完成模块、待补短板）
 │   └── Hardware-Software-Requirements.md  # 软硬件要求（GPU算力、依赖库版本）
 ├── 01-CPP-Foundation/               # 阶段一：C++基础（1-16周）
 │   ├── 01-Syntax-Basics/            # 第1-2周：语法基础、指针与数组
