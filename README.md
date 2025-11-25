@@ -108,3 +108,153 @@ make -j4  # Linux
 ---
 
 **学习是一个持续迭代的过程**，本仓库会随学习进度不断更新代码、笔记与项目。如果对你有帮助，欢迎 Star 🌟 支持，一起成长为「C++ + CUDA + 医学图像处理」领域的工程师！
+
+
+
+
+
+
+## 📂 仓库结构详细内容
+
+```
+Medical-Image-CUDA-Learning/
+├── 00-Learning-Plan/                # 学习计划与进度管理
+│   ├── 14-Month-Plan.md             # 完整14个月学习计划（复刻文档核心内容）
+│   ├── Weekly-Tasks/                # 每周任务分解（可按周次建子文件夹，存放每日学习笔记）
+│   ├── Progress-Tracking.md         # 学习进度跟踪（已完成模块、待补短板）
+│   └── Hardware-Software-Requirements.md  # 软硬件要求（GPU算力、依赖库版本）
+├── 01-CPP-Foundation/               # 阶段一：C++基础（1-16周）
+│   ├── 01-Syntax-Basics/            # 第1-2周：语法基础、指针与数组
+│   │   ├── gray-image-threshold/    # 周末项目：灰度图阈值分割（传值/传引用对比）
+│   │   ├── matrix-add/              # 周末项目：指针实现矩阵加法
+│   │   └── src/                     # 日常练习代码（变量、循环、指针操作等）
+│   ├── 02-OOP/                      # 第3-4周：面向对象（类与对象、继承多态）
+│   │   ├── Image-Class-Basic/       # 周末项目：基础Image类（深拷贝）
+│   │   ├── Image-Class-Inheritance/ # 周末项目：Image类继承与多态（GrayImage/ColorImage）
+│   │   └── src/                     # 日常练习（构造函数、虚函数、抽象类等）
+│   ├── 03-Memory-Management/        # 第5周：动态内存与智能指针
+│   │   ├── Image-Class-SmartPointer/ # 周末项目：智能指针重构Image类
+│   │   └── src/                     # 日常练习（new/delete、shared_ptr/unique_ptr等）
+│   ├── 04-STL/                      # 第6-8周：STL容器与算法
+│   │   ├── image-pixel-storage/     # 周末项目：vector存储图像像素
+│   │   ├── image-metadata-map/      # 周末项目：map管理图像元数据
+│   │   ├── pixel-filter-sort/       # 周末项目：STL算法实现像素筛选与排序
+│   │   └── src/                     # 日常练习（vector/map/for_each/sort等）
+│   ├── 05-Advanced-CPP/             # 第9-16周：模板、内存优化、现代C++、多线程等
+│   │   ├── template-matrix/         # 周末项目：模板化矩阵类
+│   │   ├── variadic-template-sum/   # 周末项目：可变参数模板求和
+│   │   ├── image-filter-cache-opt/  # 周末项目：均值滤波缓存优化
+│   │   ├── image-processor-static-lib/ # 周末项目：图像处理静态库封装
+│   │   ├── Image-Class-ModernCPP/   # 周末项目：现代C++重构Image类（移动语义、emplace_back）
+│   │   ├── dicom-file-filter/       # 周末项目：正则匹配DICOM文件
+│   │   ├── multi-thread-image-filter/ # 周末项目：多线程图像滤波
+│   │   └── src/                     # 日常练习（异常处理、模板、内存对齐、多线程等）
+│   └── 06-Final-Project/            # 第16周：阶段综合项目
+│       ├── GrayImageProcessor/       # 无OpenCV依赖的灰度图处理工具（BMP/PGM加载、滤波、二值化）
+│       │   ├── src/                 # 源码（IO模块、滤波模块、命令行解析）
+│       │   ├── build/               # 编译产物
+│       │   └── README.md            # 项目说明与使用教程
+├── 02-Medical-Image-Basic/          # 阶段二：医学图像处理基础（17-28周）
+│   ├── 01-DICOM-Parsing/            # 第17周：DICOM格式解析
+│   │   ├── dicom-parser-tool/       # 周末项目：DICOM文件解析工具（提取元数据+转灰度图）
+│   │   └── src/                     # 日常练习（DCMTK库使用）
+│   ├── 02-Image-Enhancement/        # 第18-21周：灰度变换、滤波（线性/非线性）
+│   │   ├── medical-image-noise-analysis/ # 周末项目：CT图像噪声分析（HU值分布、PSNR）
+│   │   ├── gray-enhancement-tool/   # 周末项目：灰度增强工具（线性拉伸、伽马校正、直方图均衡化）
+│   │   ├── edge-detection-linear/   # 周末项目：Sobel/Prewitt边缘检测
+│   │   ├── edge-preserving-filter/  # 周末项目：中值/双边/导向滤波（保边降噪）
+│   │   └── src/                     # 日常练习（卷积运算、高斯核生成等）
+│   ├── 03-Image-Segmentation/       # 第22-24周：形态学操作、阈值分割、边缘/区域分割
+│   │   ├── morphological-processing/ # 周末项目：形态学处理工具（腐蚀/膨胀/梯度）
+│   │   ├── threshold-segmentation/  # 周末项目：阈值分割工具（Otsu/自适应阈值）
+│   │   ├── medical-segmentation-lib/ # 周末项目：分割库（Canny/区域生长/分水岭）
+│   │   └── src/                     # 日常练习（形态学操作、Dice系数计算等）
+│   ├── 04-3D-Medical-Image/         # 第25-27周：3D体数据、3D滤波、点云处理
+│   │   ├── 3d-dicom-sequence-parser/ # 周末项目：3D DICOM序列处理工具（切片提取）
+│   │   ├── 3d-filter-pointcloud/    # 周末项目：3D滤波与点云提取（Marching Cubes）
+│   │   ├── medical-pointcloud-processing/ # 周末项目：点云下采样/去噪/法线计算
+│   │   └── src/                     # 日常练习（3D数组、VTK可视化、PCL库使用等）
+│   └── 05-Final-Project/            # 第28周：阶段综合项目
+│       ├── 3D-Medical-Segmentation-PointCloud/ # 3D医学图像分割与点云提取系统
+│           ├── src/                 # 源码（IO/滤波/分割/点云模块）
+│           ├── build/               # 编译产物
+│           └── README.md            # 项目说明与测试报告
+├── 03-CUDA-Foundation/              # 阶段三：CUDA并行计算入门（29-44周）
+│   ├── 01-CUDA-Basics/              # 第29-33周：CUDA基础、内存模型、线程同步
+│   │   ├── cuda-hello-world/        # 第29周：环境测试（Hello World）
+│   │   ├── cuda-vector-add/         # 第30周：CUDA向量加法（核函数+错误处理）
+│   │   ├── cuda-vector-add-memory/  # 第31周：向量加法（全局内存/常量内存对比）
+│   │   ├── cuda-reduction-sum/      # 第32周：共享内存优化并行归约求和
+│   │   ├── cuda-histogram/          # 第33周：并行直方图计算（原子操作）
+│   │   └── src/                     # 日常练习（线程索引计算、cudaMalloc、__syncthreads等）
+│   ├── 02-2D-Medical-Image-CUDA/    # 第34-36周：2D医学图像CUDA加速
+│   │   ├── cuda-2d-gaussian-filter/ # 周末项目：CUDA 2D高斯滤波（全局/共享内存）
+│   │   ├── cuda-2d-medical-algorithms/ # 周末项目：CUDA 2D医学算法库（阈值分割、Canny等）
+│   │   ├── cuda-2d-gaussian-stream/ # 周末项目：流优化2D高斯滤波（单流/多流）
+│   │   └── src/                     # 日常练习（2D线程映射、边界Padding、异步执行等）
+│   ├── 03-3D-PointCloud-CUDA/       # 第37-41周：3D体数据、点云CUDA加速
+│   │   ├── cuda-3d-median-filter/   # 周末项目：CUDA 3D中值滤波
+│   │   ├── cuda-3d-gaussian-optimized/ # 周末项目：可分离+共享内存优化3D高斯滤波
+│   │   ├── cuda-pointcloud-downsample-denoise/ # 周末项目：并行点云下采样与去噪
+│   │   ├── cuda-pointcloud-normal/  # 周末项目：并行点云表面法线计算
+│   │   ├── cuda-mixed-precision-3d-conv/ # 周末项目：混合精度3D卷积
+│   │   └── src/                     # 日常练习（3D线程映射、可分离卷积、混合精度等）
+│   ├── 04-CUDA-Optimization-Debug/  # 第42-43周：性能调优与健壮性设计
+│   │   ├── cuda-3d-gaussian-profiling/ # 周末项目：3D高斯滤波性能调优（Nsight/nvprof）
+│   │   ├── cuda-medical-lib-robust/ # 周末项目：CUDA算法库健壮性重构（错误检查、内存泄漏修复）
+│   │   └── src/                     # 日常练习（性能分析工具使用、错误处理宏等）
+│   └── 05-Final-Project/            # 第44周：阶段综合项目
+│       ├── CUDA-Medical-Image-Processor/ # CUDA加速2D/3D医学图像处理系统
+│           ├── src/                 # 源码（IO模块、CPU/CUDA算法模块、可视化模块）
+│           ├── build/               # 跨平台编译产物（Windows/Linux）
+│           ├── docs/                # API文档、编译指南
+│           └── performance-report/  # 性能报告（加速比、GPU利用率）
+├── 04-Medical-Image-CUDA-Practice/  # 阶段四：实战提升与专业化应用（45-54周）
+│   ├── 01-3D-Cylinder-Detection/    # 第45-46周：3D霍夫变换圆柱体检测
+│   │   ├── cpu-hough-transform/     # 周末项目：CPU版3D霍夫变换
+│   │   ├── cuda-hough-transform/    # 周末项目：CUDA版3D霍夫变换（并行投票+内存优化）
+│   │   └── src/                     # 日常练习（参数空间分块、原子操作优化等）
+│   ├── 02-Medical-Image-Stitching/  # 第47-48周：医学图像拼接
+│   │   ├── cpu-sift-stitching/      # 周末项目：CPU版SIFT图像拼接
+│   │   ├── cuda-sift-stitching/     # 周末项目：CUDA版SIFT拼接（并行特征提取/匹配）
+│   │   └── src/                     # 日常练习（尺度空间构建、FLANN匹配并行化等）
+│   ├── 03-MRI-Bias-Field/           # 第49周：MRI偏置场仿真
+│   │   ├── cuda-bias-field-simulation/ # 周末项目：CUDA加速MRI偏置场仿真
+│   │   └── src/                     # 日常练习（多项式/高斯偏置场模型、批量处理等）
+│   ├── 04-Engineering-Encapsulation/ # 第50-51周：工程化封装与批量调度
+│   │   ├── MedicalImageCudaLib/     # 周末项目：动态库封装（统一接口、模板化）
+│   │   ├── batch-medical-processing/ # 周末项目：批量医学图像处理系统（线程池+内存池）
+│   │   └── src/                     # 日常练习（CMake配置、跨平台编译、任务队列等）
+│   ├── 05-Open-Source-Project/      # 第52周：开源项目发布
+│   │   ├── Medical-Image-CUDA-Accelerator/ # 开源项目核心代码
+│   │   ├── docs/                    # API文档（Doxygen生成）、贡献指南
+│   │   ├── tests/                   # Google Test测试用例（覆盖率≥70%）
+│   │   ├── benchmarks/              # 性能基准报告（对比CPU/OpenCV-CUDA/PCL-GPU）
+│   │   ├── README.md                # 开源项目说明（功能、编译、使用示例）
+│   │   └── LICENSE                  # 开源许可证
+│   └── 06-Advanced-Exploration/     # 第53-54周：TensorRT融合与技术复盘
+│       ├── cuda-tensorrt-unet/      # 周末项目：CUDA+TensorRT混合分割系统（U-Net）
+│       ├── learning-summary-report/ # 学习总结报告（技术栈、项目成果、优化案例）
+│       ├── interview-prep/          # 面试准备（C++/CUDA算法题）
+│       └── future-learning-plan/    # 长期学习计划
+├── 05-Common-Libs/                  # 公共依赖库与工具
+│   ├── dcmtk/                       # DCMTK库（DICOM解析）
+│   ├── vtk/                         # VTK库（3D可视化）
+│   ├── pcl/                         # PCL库（点云处理）
+│   ├── opencv/                      # OpenCV（对比验证结果）
+│   └── cmake-modules/               # 通用CMake模块（跨平台编译配置）
+├── 06-Docs/                         # 知识沉淀与文档
+│   ├── cpp-notes/                   # C++学习笔记（语法、STL、现代C++等）
+│   ├── medical-image-notes/         # 医学图像处理笔记（DICOM、滤波、分割等）
+│   ├── cuda-notes/                  # CUDA学习笔记（内存模型、线程模型、优化技巧等）
+│   ├── resources/                   # 学习资源（书籍、博客、官方文档链接）
+│   ├── faq/                         # 常见问题（编译错误、GPU适配、性能瓶颈）
+│   └── technical-blogs/             # 技术博客（核心优化思路、项目复盘）
+├── 07-Tools/                        # 工具配置与辅助脚本
+│   ├── cmake/                       # 全局CMake配置（CMakeLists.txt模板）
+│   ├── scripts/                     # 辅助脚本（编译脚本、性能测试脚本、批量处理脚本）
+│   ├── debug/                       # 调试配置（VS Code/GDB调试文件）
+│   └── format/                      # 代码格式化（Clang-Format配置文件）
+├── .gitignore                       # Git忽略文件（编译产物、IDE配置、日志等）
+└── README.md                        # 仓库总说明（结构介绍、学习路线、快速开始）
+```
