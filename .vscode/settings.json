@@ -48,7 +48,14 @@
         "streambuf": "cpp",
         "text_encoding": "cpp",
         "typeinfo": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "chrono": "cpp",
+        "cstdarg": "cpp",
+        "ratio": "cpp",
+        "iomanip": "cpp",
+        "queue": "cpp",
+        "ranges": "cpp",
+        "sstream": "cpp"
     },
     "python-envs.defaultEnvManager": "ms-python.python:conda",
     "python-envs.defaultPackageManager": "ms-python.python:conda",
