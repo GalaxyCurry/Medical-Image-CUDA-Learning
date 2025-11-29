@@ -436,3 +436,166 @@ int main() {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////易错点集中在：未初始化指针、类型不匹配、边界越界、const 位置混淆
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+// 辅助函数：打印矩阵（用于验证结果）
+void printMatrix(int row, int col, const int* mat){
+    if(mat == nullptr || row < 0 || col < 0){
+        std::cout << "无效矩阵，无法打印！" << endl;
+        return; 
+    }
+    for (int i = 0; i < row; ++i){
+        for (int j = 0; j < col; ++j){
+            std::cout << mat[i * col + j] << "\t";
+        }
+        std::cout << endl;
+    }
+    
+}
+
+
+
+bool matrixAdd(int row, int col, const int* matA, const int* matB, int* matResult){
+    // 容错处理：规避空指针、非法尺寸（易错点防护）
+    if(matA == nullptr || matB == nullptr || matResult == nullptr){
+        std::cout << "错误：矩阵指针不能为空！" << endl;
+        return false; 
+    }
+    if (row <= 0 || col <= 0) {
+        std::cout << "错误：矩阵尺寸必须为正整数！" << endl;
+        return false;
+    }
+
+    // 逐元素加法：通过线性地址访问（无越界，因i<row、j<col）
+    for(int i = 0; i < row; ++i){
+        for(int j = 0; j < col; ++j){
+            // 关键：多维数组线性存储映射 → 行号*列数 + 列号
+            matResult[i * col + j] = matA[i * col + j] + matB[i + col + j];
+        }
+    }
+
+    return true;
+}
+
+
+
+
+
+
+
+int main(){
+    // -------------------------- 验收标准1：指针算术结果手动验证 --------------------------
+    std::cout << "=== 验收标准1：指针算术验证 ===" << std::endl;
+    int arr[3]={10,20,30};
+    int* p = arr; //p指向arr[0]
+
+    // 验证p、p+1、p+2的指向（int占4字节，偏移量=1*4=4字节）
+    std::cout << "arr[0] 地址：" << (void*)&arr[0] << "，值：" << arr[0] << endl;
+    std::cout << "p指向     ：" << (void*)p << "，值：" << *p << "（应等于arr[0]）" << endl;
+
+    p++;// 指针+1 → 偏移4字节，指向arr[1]
+    std::cout << "\narr[1] 地址：" << (void*)&arr[1] << "，值：" << arr[1] << endl;
+    std::cout << "p++后指向  ：" << (void*)p << "，值：" << *p << "（应等于arr[1]）" << endl;
+
+    p+=1;
+    std::cout << "\narr[2] 地址：" << (void*)&arr[2] << "，值：" << arr[2] << endl;
+    std::cout << "p++后指向  ：" << (void*)p << "，值：" << *p << "（应等于arr[2]）" << endl;
+    std::cout << endl;
+
+
+    // -------------------------- 验收标准2：多维数组指针访问（无越界） --------------------------
+    std::cout << "=== 验收标准2：多维数组无越界指针访问 ===" << endl;
+    const int ROW=2, COL=3;
+    int mat[ROW][COL] = {{1, 2, 3}, {4, 5, 6}}; // 2行3列二维数组（线性存储：1→2→3→4→5→6）
+
+    // 方式1：数组指针访问（最安全，匹配多维数组类型）
+    int (*pMat)[COL] = mat; // 数组指针：指向int[3]类型（每行）
+    std::cout << "数组指针访问结果：" << endl;
+    for(int i = 0; i < ROW; ++i){
+        for(int j = 0; j < COL; ++j){
+            std::cout << (*(pMat+i)[j]) << "\t";
+        }
+        std::cout << endl;
+    }
+
+    // 方式2：普通指针访问（线性地址映射）
+    int* qMat = (int*)mat; // 普通指针：指向数组首元素（线性存储起点）
+    std::cout << "普通指针访问结果：" << endl;
+    for(int i = 0; i < ROW * COL; ++i){
+        std::cout << *(qMat + i) << "\t";
+        if((i + 1) % COL == 0) std::cout << endl;
+    }
+    std::cout << endl;
+
+
+
+    // -------------------------- 验收标准3：不同尺寸矩阵加法 --------------------------
+    std::cout << "=== 验收标准3：不同尺寸矩阵加法 ===" << endl;
+
+    // 测试用例1：2x3矩阵加法
+    std::cout << "测试用例1：2行3列矩阵加法" << endl;
+    int matA23[2][3] = {{1,2,3},{4,5,6}};
+    int matB23[2][3] = {{10,20,30},{40,50,60}};
+    int matResult23[2][3] = {0};  // 初始化结果矩阵（避免野值）
+    
+    if(matrixAdd(2, 3 , (int*)matA23, (int*)matB23, (int*)matResult23)){
+
+        std::cout << "矩阵A：" << endl;
+        printMatrix(2, 3, (int*)matA23);
+        std::cout << "矩阵B：" << endl;
+        printMatrix(2, 3, (int*)matB23);
+        std::cout << "A+B结果：" << endl;
+        printMatrix(2, 3, (int*)matResult23); // 预期结果：11,22,33; 44,55,66
+
+    }
+    std::cout << endl;
+
+
+    // 测试用例2：3x2矩阵加法（不同尺寸，验证灵活性）
+    std::cout << "测试用例2：3行2列矩阵加法" << endl;
+    int matA32[3][2] = {{1, 2}, {3, 4}, {5, 6}};
+    int matB32[3][2] = {{-1, -2}, {-3, -4}, {-5, -6}};
+    int matResult32[3][2] = {0};
+
+    if (matrixAdd(3, 2, (int*)matA32, (int*)matB32, (int*)matResult32)) {
+        std::cout << "矩阵A：" << endl;
+        printMatrix(3, 2, (int*)matA32);
+        std::cout << "矩阵B：" << endl;
+        printMatrix(3, 2, (int*)matB32);
+        std::cout << "A+B结果：" << endl;
+        printMatrix(3, 2, (int*)matResult32); // 预期结果：0,0; 0,0; 0,0
+    }
+    std::cout << endl;
+
+
+
+
+    // 测试用例3：1x4矩阵加法（极端尺寸，验证通用性）
+    std::cout << "测试用例3：1行4列矩阵加法" << endl;
+    int matA14[1][4] = {{2, 4, 6, 8}};
+    int matB14[1][4] = {{1, 3, 5, 7}};
+    int matResult14[1][4] = {0};
+
+    if (matrixAdd(1, 4, (int*)matA14, (int*)matB14, (int*)matResult14)) {
+        std::cout << "矩阵A：" << endl;
+        printMatrix(1, 4, (int*)matA14);
+        std::cout << "矩阵B：" << endl;
+        printMatrix(1, 4, (int*)matB14);
+        std::cout << "A+B结果：" << endl;
+        printMatrix(1, 4, (int*)matResult14); // 预期结果：3,7,11,15
+    }
+
+    return 0;
+
+
+    
+}
