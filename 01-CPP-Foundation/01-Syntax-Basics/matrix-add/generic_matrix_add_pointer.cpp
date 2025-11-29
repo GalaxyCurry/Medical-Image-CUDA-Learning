@@ -26,7 +26,86 @@ bool matrixAdd(int row, int col, const int* matA, const int* matB, int* matResul
 
 // -------------------------- 功能函数实现 --------------------------
 // 初始化矩阵：isRandom=true→随机生成(1-10)，false→手动输入
+void initMatrix(int row, int col, int* mat, bool isRandom) {
+    if (mat == nullptr || row <= 0 || col <= 0) {
+        cout << "矩阵初始化失败：参数无效！" << endl;
+        return;
+    }
 
+    cout << "初始化 " << row << "x" << col << " 矩阵：" << endl;
+    if (isRandom) {
+        // 随机生成1-10的整数（需包含<cstdlib>）
+        srand((unsigned int)time(nullptr));  // 随机数种子（仅需初始化一次）
+        for (int i = 0; i < row; i++) {
+            for (int j = 0; j < col; j++) {
+                // 指针访问：*(mat + i*col + j) 等价于 mat[i][j]
+                *(mat + i * col + j) = rand() % 10 + 1;  // 1-10
+            }
+        }
+    } else {
+        // 手动输入矩阵元素
+        for (int i = 0; i < row; i++) {
+            cout << "请输入第 " << i + 1 << " 行（共" << col << "个数字，空格分隔）：";
+            for (int j = 0; j < col; j++) {
+                cin >> *(mat + i * col + j);  // 指针访问，存储输入值
+            }
+        }
+    }
+}
+
+
+
+
+
+// 打印矩阵：格式化输出，元素右对齐（美观易读）
+void printMatrix(int row, int col, const int* mat) {
+    if (mat == nullptr || row <= 0 || col <= 0) {
+        cout << "矩阵打印失败：参数无效！" << endl;
+        return;
+    }
+
+    for (int i = 0; i < row; i++) {
+        for (int j = 0; j < col; j++) {
+            // 指针访问元素，setw(4) 控制每个元素占4个字符宽度（右对齐）
+            cout << setw(4) << *(mat + i * col + j);
+        }
+        cout << endl;  // 每行结束换行
+    }
+}
+
+
+
+// 核心函数：矩阵加法（任意尺寸）
+// 参数：row=行数，col=列数；matA、matB=输入矩阵；matResult=输出结果矩阵
+// 返回值：true=加法成功，false=失败（参数无效）
+bool matrixAdd(int row, int col, const int* matA, const int* matB, int* matResult) {
+
+    // 1. 参数合法性校验（规避空指针、非法尺寸）
+    if (matA == nullptr || matB == nullptr || matResult == nullptr) {
+        cout << "错误：输入/输出矩阵指针不能为空！" << endl;
+        return false;
+    }
+    if (row <= 0 || col <= 0) {
+        cout << "错误：矩阵行数/列数必须为正整数！" << endl;
+        return false;
+    }
+
+
+
+    // 2. 指针遍历矩阵，逐元素相加（无越界）
+    for (int i = 0; i < row; i++) {
+        for (int j = 0; j < col; j++) {
+            // 关键：二维索引 → 线性地址映射：i*col + j
+            // 指针访问：*(mat + 偏移量) = 目标元素
+            *(matResult + i * col + j) = *(matA + i * col + j) + *(matB + i * col + j);
+        }
+    }
+
+
+    cout << "\n矩阵加法完成！" << endl;
+    return true;
+
+}
 
 
 
@@ -93,6 +172,35 @@ int main(){
         cout << "\nA + B 结果（4x2）：" << endl;
         printMatrix(row, col, (int*)matResult4x2);
     }
+
+
+
+
+
+
+
+    // -------------------------- 测试3：极端尺寸（1x5矩阵，验证通用性） --------------------------
+    cout << "\n\n【测试3：1x5矩阵加法（随机生成）】" << endl;
+    row = 1, col = 5;
+    int matA1x5[row][col];
+    int matB1x5[row][col];
+    int matResult1x5[row][col] = {0};
+
+    initMatrix(row, col, (int*)matA1x5, true);
+    initMatrix(row, col, (int*)matB1x5, true);
+
+    cout << "\n矩阵A（1x5）：" << endl;
+    printMatrix(row, col, (int*)matA1x5);
+    cout << "\n矩阵B（1x5）：" << endl;
+    printMatrix(row, col, (int*)matB1x5);
+
+    if (matrixAdd(row, col, (int*)matA1x5, (int*)matB1x5, (int*)matResult1x5)) {
+        cout << "\nA + B 结果（1x5）：" << endl;
+        printMatrix(row, col, (int*)matResult1x5);
+    }
+
+    cout << "\n===== 项目结束 =====" << endl;
+    return 0;
 
 
 
