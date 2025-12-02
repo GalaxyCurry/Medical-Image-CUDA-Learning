@@ -223,3 +223,105 @@ new 和 malloc的区别
 6、new操作符从自由存储区上为对象动态分配内存空间，而malloc函数从堆上动态分配内存。
 
 ![alt text](image-1.png)
+
+
+
+
+
+
+
+
+
+
+
+
+struct和Class的区别
+相同点：
+如果结构体没有定义任何构造函数，编译器会生成默认的无参数构造函数。如果类没有定义任何构造函数，编译器也会生成默认的无参数构造函数。
+不同点：
+通常，struct用于表示一组相关的数据，而class用于表示一个封装了数据和操作的对象,在实际使用中，可以根据具体的需求选择使用struct或class。如果只是用来组织一些数据，而不涉及复杂的封装和继承关系，struct可能更直观；如果需要进行封装、继承等面向对象编程的特性，可以选择使用class。
+struct结构体中的成员默认是公有的（public）。类中的成员默认是私有的（private）。
+struct 继承时默认使用公有继承。class 继承时默认使用私有继承。
+
+// 使用 struct 定义
+struct MyStruct {
+    int x;  // 默认是 public
+    void print() {
+        cout << "Struct method" << endl;
+    }
+};
+
+// 使用 class 定义
+class MyClass {
+public:  // 如果省略，默认是 private
+    int y;
+    void display() {
+        cout << "Class method" << endl;
+    }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+C++强制类型转换
+
+1. static_cast
+没有运行时类型检查来保证转换的安全性
+进行上行转换（把派生类的指针或引用转换成基类表示）是安全的
+进行下行转换（把基类的指针或引用转换为派生类表示），由于没有动态类型检查，所以是不安全的。
+使用：
+用于基本数据类型之间的转换，如把int转换成char。
+把任何类型的表达式转换成void类型。
+2. dynamic_cast
+在进行下行转换时，dynamic_cast具有类型检查（信息在虚函数中）的功能，比static_cast更安全。
+转换后必须是类的指针、引用或者void*，基类要有虚函数，可以交叉转换。
+dynamic本身只能用于存在虚函数的父子关系的强制类型转换；对于指针，转换失败则返回nullptr，对于引用，转换失败会抛出异常。
+3. reinterpret_cast
+可以将整型转换为指针，也可以把指针转换为数组；可以在指针和引用里进行肆无忌惮的转换，平台移植性比价差。
+4. const_cast
+常量指针转换为非常量指针，并且仍然指向原来的对象。常量引用被转换为非常量引用，并且仍然指向原来的对象。去掉类型的const或volatile属性。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+C++中的nullptr与NULL的区别
+类型上的区别 nullptr nullptr是C++11引入的关键字，表示一种特殊的空指针类型，具体为std::nullptr_t线程安全类型，这种类型可以隐式转换为任意的指针类型，但不能转换为整数类型。
+
+int *p=nullptr ;
+void *vp=nullptr;
+int x=nullptr;//error
+
+NULL: NULL是一个宏定义，通常定义为0或(void*)0，它的本质还是一个整数常量，可以隐式的转换为指针类型，但可能引发分歧。
+
+void func(int );
+void func(int *);
+int main()
+{
+    func(NULL);    // 调用 func(int)，因为 NULL 是整数，但是此时NULL可能存在为二义性
+    func(nullptr); // 调用 func(int*)，因为 nullptr 是指针类型
+    return 0;
+}
+
+![alt text](image-2.png)
