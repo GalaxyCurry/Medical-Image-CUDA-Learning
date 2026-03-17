@@ -231,6 +231,7 @@ void add_ptr(int* p) {
     cout << "指针p存储的地址：" << p << endl;      // 输出x的内存地址
 }
 
+
 int main() {
     int x = 10;
     add_ptr(&x); // 传递x的地址（&是取地址符）
