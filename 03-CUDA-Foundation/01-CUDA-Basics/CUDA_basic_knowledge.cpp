@@ -1,58 +1,13 @@
 
 
-//内存类型              属性         作用域        生命周期
-//register          片上，可读写   每个线程专用      线程
-//local memory      片外，可读写   每个线程专用      线程
-//shared memory     片上，可读写     block共享    块内所有线程
-//constant memory   片外，只读       grid共享      应用程序
-//global memory     片外，可读写     grid共享      应用程序
-//texture memory     片外，只读      grid共享      应用程序
 
-
-
-//变量声明                 存储器         作用域       生命周期
-//int a                   寄存器          线程          线程
-//int a[100000]           本地内存        线程          线程
-//__shared__ int a[100]   共享内存        块            块
-//__constant__ int a      常量内存        全局          应用程序
-//__device__ int a        全局内存        全局          应用程序
-
-
-
-// cpu 主存（DRAM） L3   L1/L2   寄存器
-// Gpu 显存（DRAM） L2   L1      寄存器
-// 容量   大 -> 小
-// 速度   慢 -> 快
-
-
-
-
-//CUDA核心（流处理器）（SP）(SM)：决定CUDA运算的并行运算吞吐量上限
-//GPU 核心主频（shared clock）：决定CUDA运算的指令执行速度与延迟
-//显存带宽：决定CUDA运算的数据供给上限，常见性能瓶颈
-
-
-//计算密集型  CUDA核心数>主频>带宽
-//访存密集型  带宽>CUDA核心数>主频
-//延迟敏感性  主频>CUDA核心数>带宽
-
-
-
-/* 
-              executed    callable
-__device__     device      device
-__global__     device      host
-__host__       host        host
- */
-
-
-//////////////////////////////////////////////////////////// CUDA 两大基础知识 ////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////// 【CUDA 两大基础知识】 ////////////////////////////////////////////////////////////
 // 线程层次
 // 存储模型
 
 
 
-///////////////////////////////////////////////// 线程层次 /////////////////////////////////////////////////
+///////////////////////////////////////////////// 【【线程层次】】 /////////////////////////////////////////////////
 
 // 线程 thread
 // 线程块 block
@@ -138,3 +93,59 @@ int threadId = threadIdx.z * blockDim.x * blockDim.y + threadIdx.y * blockDim.x 
 
 
 
+
+///////////////////////////////////////////////// 【【存储模型】】 /////////////////////////////////////////////////
+
+ 
+//内存类型              属性         作用域        生命周期
+//register          片上，可读写   每个线程专用      线程
+//local memory      片外，可读写   每个线程专用      线程
+//shared memory     片上，可读写     block共享    块内所有线程
+//constant memory   片外，只读       grid共享      应用程序
+//global memory     片外，可读写     grid共享      应用程序
+//texture memory     片外，只读      grid共享      应用程序
+
+
+
+//变量声明                 存储器         作用域       生命周期
+//int a                   寄存器          线程          线程
+//int a[100000]           本地内存        线程          线程
+//__shared__ int a[100]   共享内存        块            块
+//__constant__ int a      常量内存        全局          应用程序
+//__device__ int a        全局内存        全局          应用程序
+
+
+
+// cpu 主存（DRAM） L3   L1/L2   寄存器
+// Gpu 显存（DRAM） L2   L1      寄存器
+// 容量   大 -> 小
+// 速度   慢 -> 快
+
+
+
+
+//CUDA核心（流处理器）（SP）(SM)：决定CUDA运算的并行运算吞吐量上限
+//GPU 核心主频（shared clock）：决定CUDA运算的指令执行速度与延迟
+//显存带宽：决定CUDA运算的数据供给上限，常见性能瓶颈
+
+
+//计算密集型  CUDA核心数>主频>带宽
+//访存密集型  带宽>CUDA核心数>主频
+//延迟敏感性  主频>CUDA核心数>带宽
+
+
+
+/* 
+              executed    callable
+__device__     device      device
+__global__     device      host
+__host__       host        host
+ */
+
+
+//  标准C函数       CUDA C函数        功能    
+//   malloc        cudaMalloc       内存分配
+//   memcpy        cudaMemcpy       内存复制（cudaMemcpyHostToHost）
+//   free          cudaFree         内存释放
+
+// cudaError_t类型， 记录CUDA错误
