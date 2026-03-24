@@ -149,3 +149,7 @@ __host__       host        host
 //   free          cudaFree         内存释放
 
 // cudaError_t类型， 记录CUDA错误
+
+
+
+
