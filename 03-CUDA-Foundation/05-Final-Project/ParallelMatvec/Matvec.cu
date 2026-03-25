@@ -1,11 +1,9 @@
-/* 
-单精度矩阵向量乘
- */
-
 #include <stdio.h>
 #include <math.h>
 #include <cuda_runtime.h>
 #include <cublas_v2.h>
+
+//单精度矩阵向量乘
 
 //朴素实现
 __global__ void sgemvNative(float *A, float *X, float *Y, int M, int N)
@@ -72,7 +70,7 @@ __global__ void sgemvSharedMemory(float *At, float *X, float *Y, int M, int N)
         if(j_last_block_index != N)
         {
             s_X[threadIdx.x] = X[j_last_block_index + threadIdx.x];
-            __synthreads();
+            __syncthreads();
             #pragma unroll
             for(int k = 0; k < (N - j_last_block_index); k++)
             {
@@ -110,7 +108,7 @@ bool verifyResult(float *h_Y_base, float *h_Y, int M)
 
 int main(int argc, char **argv)
 {
-    size_t M = 1 << 14, N = 1 <<14;
+    int M = 1 << 14, N = 1 <<14;
     if(argc == 3)
     {
         M = 1 << (atoi(argv[1]));
@@ -182,12 +180,12 @@ int main(int argc, char **argv)
     cudaMemcpy(h_Y_base, d_Y, M * sizeof(float), cudaMemcpyDeviceToHost);
     msPerMatrixVectorMul[0] = msTotal/nIter;
     gflops[0] = (flopsPerMatrixVectorMul * 1.0e-9f) / (msPerMatrixVectorMul[0] / 1000.0f);
-    printf("cublas 性能=%.2f GFlop/s,运行时间= %.3f ms\n\n", gflops[0], msPerMatrixVectorMul[0]);
+    printf("cublas Performance=%.2f GFlop/s,Runtime= %.3f ms\n\n", gflops[0], msPerMatrixVectorMul[0]);
 
 
 
     // ===================== Native =====================
-    cudaMemcpy(d_Y, h_Y, M * sizeof(float), cudaMemHostToDevice);
+    cudaMemcpy(d_Y, h_Y, M * sizeof(float), cudaMemcpyHostToDevice);
     cudaEventRecord(start);
     for(int i = 0; i < nIter; i++)
     {
@@ -199,14 +197,14 @@ int main(int argc, char **argv)
     cudaMemcpy(h_Y, d_Y, M * sizeof(float), cudaMemcpyDeviceToHost);
     msPerMatrixVectorMul[1] = msTotal/nIter;
     gflops[1] = (flopsPerMatrixVectorMul * 1.0e-9f) / (msPerMatrixVectorMul[1] / 1000.0f);
-    printf("sgemvNative 性能=%.2f GFlop/s,运行时间= %.3f ms\n\n", gflops[1], msPerMatrixVectorMul[1]);
+    printf("sgemvNative Performance=%.2f GFlop/s,Runtime= %.3f ms\n", gflops[1], msPerMatrixVectorMul[1]);
     printf("%s\n", verifyResult(h_Y_base, h_Y, M) ? "Accuracy check passed" : "Accuracy check failed");
     printf("achieve cublas %f%\n\n", gflops[1] / gflops[0] * 100.0);
 
 
     // ===================== Coalesced =====================
     memset(h_Y, 0.0, M * sizeof(float));
-    cudaMemcpy(d_Y, h_Y, M * sizeof(float), cudaMemHostToDevice);
+    cudaMemcpy(d_Y, h_Y, M * sizeof(float), cudaMemcpyHostToDevice);
     cudaEventRecord(start);
     for(int i = 0; i < nIter; i++)
     {
@@ -218,7 +216,7 @@ int main(int argc, char **argv)
     cudaMemcpy(h_Y, d_Y, M * sizeof(float), cudaMemcpyDeviceToHost);
     msPerMatrixVectorMul[2] = msTotal/nIter;
     gflops[2] = (flopsPerMatrixVectorMul * 1.0e-9f) / (msPerMatrixVectorMul[2] / 1000.0f);
-    printf("sgemvCoalesced  性能=%.2f GFlop/s,运行时间= %.3f ms\n\n", gflops[2], msPerMatrixVectorMul[2]);
+    printf("sgemvCoalesced  Performance=%.2f GFlop/s,Runtime= %.3f ms\n", gflops[2], msPerMatrixVectorMul[2]);
     printf("%s\n", verifyResult(h_Y_base, h_Y, M) ? "Accuracy check passed" : "Accuracy check failed");
     printf("achieve cublas %f%\n\n", gflops[2] / gflops[0] * 100.0);
 
@@ -228,7 +226,7 @@ int main(int argc, char **argv)
     {
         cudaMemcpyToSymbol(d_CX, h_X, sizeof(float) * N);
         memset(h_Y, 0.0, M * sizeof(float));
-        cudaMemcpy(d_Y, h_Y, M * sizeof(float), cudaMemHostToDevice);
+        cudaMemcpy(d_Y, h_Y, M * sizeof(float), cudaMemcpyHostToDevice);
         cudaEventRecord(start);
         for(int i = 0; i < nIter; i++)
         {
@@ -240,7 +238,7 @@ int main(int argc, char **argv)
         cudaMemcpy(h_Y, d_Y, M * sizeof(float), cudaMemcpyDeviceToHost);
         msPerMatrixVectorMul[3] = msTotal/nIter;
         gflops[3] = (flopsPerMatrixVectorMul * 1.0e-9f) / (msPerMatrixVectorMul[3] / 1000.0f);
-        printf("sgemvConstant  性能=%.2f GFlop/s,运行时间= %.3f ms\n\n", gflops[3], msPerMatrixVectorMul[3]);
+        printf("sgemvConstant  Performance=%.2f GFlop/s,Runtime= %.3f ms\n", gflops[3], msPerMatrixVectorMul[3]);
         printf("%s\n", verifyResult(h_Y_base, h_Y, M) ? "Accuracy check passed" : "Accuracy check failed");
         printf("achieve cublas %f%\n\n", gflops[3] / gflops[0] * 100.0);
     }
@@ -248,7 +246,7 @@ int main(int argc, char **argv)
 
     // ===================== Shared Memory =====================
     memset(h_Y, 0.0, M * sizeof(float));
-    cudaMemcpy(d_Y, h_Y, M * sizeof(float), cudaMemHostToDevice);
+    cudaMemcpy(d_Y, h_Y, M * sizeof(float), cudaMemcpyHostToDevice);
     cudaEventRecord(start);
     for(int i = 0; i < nIter; i++)
     {
@@ -260,13 +258,13 @@ int main(int argc, char **argv)
     cudaMemcpy(h_Y, d_Y, M * sizeof(float), cudaMemcpyDeviceToHost);
     msPerMatrixVectorMul[4] = msTotal/nIter;
     gflops[4] = (flopsPerMatrixVectorMul * 1.0e-9f) / (msPerMatrixVectorMul[4] / 1000.0f);
-    printf("sgemvSharedMemory 性能=%.2f GFlop/s,运行时间= %.3f ms\n\n", gflops[4], msPerMatrixVectorMul[4]);
+    printf("sgemvSharedMemory Performance=%.2f GFlop/s,Runtime= %.3f ms\n", gflops[4], msPerMatrixVectorMul[4]);
     printf("%s\n", verifyResult(h_Y_base, h_Y, M) ? "Accuracy check passed" : "Accuracy check failed");
     printf("achieve cublas %f%\n\n", gflops[4] / gflops[0] * 100.0);
 
 
-    cudaEventDestory(start);
-    cudaEventDestory(stop);
+    cudaEventDestroy(start);
+    cudaEventDestroy(stop);
 
 
     cudaFree(d_A);
